@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ToDoリスト（期限付き）</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>ToDoリスト</h1>
+    <form id="task-form">
+      <input 
+        type="text" 
+        id="task-input" 
+        placeholder="やることを入力..." 
+        required
+      >
+      <input 
+        type="date" 
+        id="due-date" 
+        required
+      >
+      <button type="submit">追加</button>
+    </form>
+    <ul id="task-list"></ul>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

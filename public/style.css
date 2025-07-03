@@ -1,0 +1,65 @@
+body {
+  font-family: Arial, sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+#task-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+#task-input {
+  flex: 2;
+  padding: 10px;
+}
+
+#due-date {
+  flex: 1;
+  padding: 9px;
+}
+
+button {
+  padding: 10px 15px;
+  background: #28a745;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+#task-list {
+  list-style: none;
+  padding: 0;
+}
+
+.task-item {
+  padding: 10px;
+  background: #f8f9fa;
+  margin-bottom: 5px;
+  border-left: 4px solid #ddd;
+}
+
+.task-item.urgent {
+  border-left-color: #dc3545;
+}
+
+.task-item .due-date {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.task-item .due-date.overdue {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.delete-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 2px 8px;
+  cursor: pointer;
+  float: right;
+}
