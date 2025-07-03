@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const port = 3000;
 
-<<<<<<< HEAD
+// ミドルウェア設定
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
@@ -33,14 +33,11 @@ app.delete('/tasks/:id', (req, res) => {
   res.sendStatus(204);
 });
 
-app.listen(port, () => {
-  console.log(`ToDoアプリ起動: http://localhost:${port}`);
-=======
+// ルートURLへのアクセス
 app.get('/', (req, res) => {
-  res.send('Hello from GitHub Codespaces!');
+  res.send('ToDoアプリへようこそ！');
 });
 
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
->>>>>>> origin/main
+  console.log(`ToDoアプリ起動: http://localhost:${port}`);
 });

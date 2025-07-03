@@ -4,30 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-<<<<<<< HEAD
     "start": "node app.js",
-    "dev": "nodemon app.js"
-=======
+    "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
->>>>>>> origin/main
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-<<<<<<< HEAD
+    "express": "^5.1.0",
     "axios": "^1.10.0",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
-    "express": "^5.1.0",
     "express-session": "^1.18.1",
     "socket.io": "^4.8.1",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
-=======
-    "express": "^5.1.0"
->>>>>>> origin/main
   }
 }
