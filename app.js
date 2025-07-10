@@ -8,22 +8,38 @@ app.use(express.static('public'));
 
 let tasks = [];
 
-// タスク一覧取得（ソート済み）
-app.get('/tasks', (req, res) => {
+// タスク分類用ヘルパー関数
+function categorizeTask(task) {
   const now = new Date();
-  const sortedTasks = [...tasks].sort((a, b) => {
-    const aDue = new Date(a.dueDate);
-    const bDue = new Date(b.dueDate);
-    
-    if (a.done && !b.done) return 1;
-    if (!a.done && b.done) return -1;
-    
-    if (aDue < now && bDue >= now) return -1;
-    if (aDue >= now && bDue < now) return 1;
-    
-    return aDue - bDue;
+  const dueDate = new Date(task.dueDate);
+  const diffDays = Math.ceil((dueDate - now) / (1000 * 60 * 60 * 24));
+  
+  if (dueDate < now) return 'overdue';
+  if (diffDays <= 3) return 'urgent';
+  if (diffDays <= 10) return 'upcoming';
+  return 'later';
+}
+
+// タスク一覧取得（分類済み）
+app.get('/tasks', (req, res) => {
+  const categorized = {
+    overdue: [],
+    urgent: [],
+    upcoming: [],
+    later: []
+  };
+
+  tasks.forEach(task => {
+    const category = categorizeTask(task);
+    categorized[category].push(task);
   });
-  res.json(sortedTasks);
+
+  // 各カテゴリ内で期限日順にソート
+  Object.values(categorized).forEach(category => {
+    category.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+  });
+
+  res.json(categorized);
 });
 
 // タスク追加
@@ -50,39 +66,11 @@ app.patch('/tasks/:id', (req, res) => {
   }
 });
 
-// タスク削除（修正版）
+// タスク削除（確認なし）
 app.delete('/tasks/:id', (req, res) => {
   const taskId = parseInt(req.params.id);
-  const initialLength = tasks.length;
   tasks = tasks.filter(task => task.id !== taskId);
-  
-  if (tasks.length === initialLength) {
-    return res.status(404).json({ error: 'タスクが見つかりません' });
-  }
   res.sendStatus(204);
-});
-
-// 検索機能（修正版）
-app.get('/tasks/search', (req, res) => {
-  const { date } = req.query;
-  
-  if (!date) {
-    return res.status(400).json({ error: '検索日付が必要です' });
-  }
-
-  try {
-    const searchDate = new Date(date).toISOString().split('T')[0];
-    const filteredTasks = tasks.filter(task => {
-      const taskDate = new Date(task.dueDate).toISOString().split('T')[0];
-      return taskDate === searchDate;
-    });
-    
-    res.json(filteredTasks.sort((a, b) => 
-      new Date(a.dueDate) - new Date(b.dueDate)
-    ));
-  } catch (err) {
-    res.status(400).json({ error: '無効な日付形式' });
-  }
 });
 
 // 自動削除処理
@@ -91,9 +79,9 @@ setInterval(() => {
   tasks = tasks.filter(task => {
     if (!task.done) return true;
     const doneTime = new Date(task.createdAt);
-    return now - doneTime < 24 * 60 * 60 * 1000;
+    return now - doneTime < 24 * 60 * 60 * 1000; // 24時間以内
   });
-}, 60 * 60 * 1000);
+}, 60 * 60 * 1000); // 1時間ごとにチェック
 
 app.listen(port, () => {
   console.log(`サーバー起動: http://localhost:${port}`);

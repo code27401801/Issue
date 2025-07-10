@@ -1,34 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>ToDoリスト</title>
+  <title>ToDoリスト（分類表示）</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
-    <div class="header">
-      <button id="toggle-view">検索</button>
-      <h1>ToDoリスト</h1>
-      <h2 id="mode-title">タスク追加</h2>
-    </div>
-
-    <!-- 入力画面 -->
-    <div id="input-view" class="view active">
-      <form id="task-form">
-        <input type="text" id="task-input" placeholder="タスクを入力..." required>
-        <input type="date" id="due-date" required>
-        <button type="submit">追加</button>
-      </form>
-      <ul id="task-list"></ul>
-    </div>
-
-    <!-- 検索画面 -->
-    <div id="search-view" class="view">
-      <form id="search-form">
-        <input type="date" id="search-date" required>
-        <button type="submit">検索</button>
-      </form>
-      <ul id="search-results"></ul>
+    <h1>ToDoリスト</h1>
+    
+    <form id="task-form">
+      <input type="text" id="task-input" placeholder="タスクを入力..." required>
+      <input type="date" id="due-date" required>
+      <button type="submit">追加</button>
+    </form>
+    
+    <div class="task-columns">
+      <div class="task-column overdue-column">
+        <h2>期限切れ</h2>
+        <ul id="overdue-tasks"></ul>
+      </div>
+      
+      <div class="task-column urgent-column">
+        <h2>3日以内</h2>
+        <ul id="urgent-tasks"></ul>
+      </div>
+      
+      <div class="task-column upcoming-column">
+        <h2>4-10日以内</h2>
+        <ul id="upcoming-tasks"></ul>
+      </div>
+      
+      <div class="task-column later-column">
+        <h2>それ以降</h2>
+        <ul id="later-tasks"></ul>
+      </div>
     </div>
   </div>
   <script src="script.js"></script>
