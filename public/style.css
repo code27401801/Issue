@@ -55,55 +55,63 @@ body {
 .task-columns {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 25px;
+  gap: 20px;
 }
 
 .task-column {
+  width: 250px;
   background: #f8f9fa;
   border-radius: 8px;
-  padding: 20px;
+  padding: 12px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
 .task-column h2 {
-  font-size: 18px;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
+  font-size: 16px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
   border-bottom: 1px solid #eee;
   color: #2c3e50;
   text-align: center;
 }
 
 /* カラムごとの色分け */
-.overdue-column { border-top: 4px solid #e74c3c; }
-.urgent-column { border-top: 4px solid #f39c12; }
-.upcoming-column { border-top: 4px solid #3498db; }
-.later-column { border-top: 4px solid #2ecc71; }
+.overdue-column { border-top: 3px solid #e74c3c; }
+.urgent-column { border-top: 3px solid #f39c12; }
+.upcoming-column { border-top: 3px solid #3498db; }
+.later-column { border-top: 3px solid #2ecc71; }
 
 /* タスクアイテム */
 .task-item {
-  display: grid;
-  grid-template-columns: 40px 1fr 120px 60px;
-  gap: 10px;
-  align-items: center;
-  padding: 15px;
-  margin-bottom: 15px;
+  min-height: 70px;
+  padding: 10px;
+  margin-bottom: 10px;
   background: white;
-  border-radius: 6px;
+  border-radius: 5px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   transition: all 0.3s;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .task-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
 }
 
-/* Doボタン */
+/* タスク内容レイアウト */
+.task-content {
+  display: grid;
+  grid-template-columns: 28px 1fr 50px;
+  gap: 6px;
+  align-items: center;
+}
+
+/* Doボタン（丸型） */
 .do-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
   border: 2px solid #27ae60;
   background: white;
   color: #27ae60;
@@ -112,12 +120,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
+  font-size: 14px;
   transition: all 0.3s;
 }
 
 .do-btn:hover {
-  background: #27ae60;
-  color: white;
+  background: #f0f0f0;
 }
 
 .task-item.done .do-btn {
@@ -127,9 +136,12 @@ body {
 
 /* タスクテキスト */
 .task-text {
+  font-size: 14px;
+  font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  padding: 0 3px;
 }
 
 .task-item.done .task-text {
@@ -139,9 +151,10 @@ body {
 
 /* 期限日 */
 .due-date {
-  font-size: 13px;
+  grid-column: 2;
+  font-size: 12px;
   color: #7f8c8d;
-  white-space: nowrap;
+  margin-top: 3px;
 }
 
 /* 削除ボタン */
@@ -149,10 +162,10 @@ body {
   background: #e74c3c;
   color: white;
   border: none;
-  padding: 8px;
+  padding: 6px 8px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 12px;
   transition: all 0.3s;
 }
 
@@ -162,24 +175,44 @@ body {
 
 /* 自動削除メッセージ */
 .auto-delete {
-  grid-column: 1 / -1;
-  font-size: 12px;
+  display: none;
+  grid-column: 2;
+  font-size: 11px;
   color: #bdc3c7;
-  margin-top: 5px;
+  margin-top: 3px;
   font-style: italic;
+}
+
+.task-item.done .due-date {
+  display: none;
+}
+
+.task-item.done .auto-delete {
+  display: block;
 }
 
 /* 空状態メッセージ */
 .no-tasks {
   text-align: center;
   color: #95a5a6;
-  padding: 20px;
+  padding: 15px;
+  font-size: 13px;
 }
 
 /* レスポンシブ対応 */
+@media (max-width: 1200px) {
+  .task-column {
+    width: 230px;
+  }
+}
+
 @media (max-width: 1000px) {
   .task-columns {
     grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .task-column {
+    width: auto;
   }
 }
 
@@ -189,20 +222,16 @@ body {
   }
   
   .task-item {
-    grid-template-columns: 40px 1fr 40px;
-    grid-template-areas:
-      "do text delete"
-      "date date date";
+    min-height: 65px;
   }
   
-  .due-date {
-    grid-area: date;
-    font-size: 12px;
-    margin-top: 8px;
+  .task-content {
+    grid-template-columns: 26px 1fr 45px;
   }
   
   #task-form {
     flex-direction: column;
+    gap: 10px;
   }
   
   #task-form input, 

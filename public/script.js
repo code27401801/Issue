@@ -70,13 +70,15 @@ function createTaskElement(task, isDone) {
   li.className = `task-item ${isDone ? 'done' : ''}`;
   
   li.innerHTML = `
-    <button class="do-btn" data-id="${task.id}">
-      ${isDone ? '✓' : 'Do'}
-    </button>
-    <span class="task-text">${task.text}</span>
-    <span class="due-date">${formatDate(task.dueDate)}</span>
-    <button class="delete-btn" data-id="${task.id}">削除</button>
-    ${isDone ? '<span class="auto-delete">24時間後に削除</span>' : ''}
+    <div class="task-content">
+      <button class="do-btn" data-id="${task.id}">
+        ${isDone ? '✓' : 'Do'} <!-- 未完了時は空、完了時は✓ -->
+      </button>
+      <span class="task-text">${task.text}</span>
+      <button class="delete-btn" data-id="${task.id}">削除</button>
+      <span class="due-date">${formatDate(task.dueDate)}</span>
+    </div>
+    <span class="auto-delete" style="display: ${isDone ? 'block' : 'none'}">24時間後に削除</span>
   `;
   
   return li;
