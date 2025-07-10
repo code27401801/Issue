@@ -11,23 +11,7 @@ const searchForm = document.getElementById('search-form');
 const searchDate = document.getElementById('search-date');
 const searchResults = document.getElementById('search-results');
 
-// 初期状態の復元
-const lastView = localStorage.getItem('lastView') || 'input';
-if (lastView === 'search') {
-  switchToSearchView();
-} else {
-  switchToInputView();
-}
-
 // 画面切り替え
-toggleViewBtn.addEventListener('click', () => {
-  if (inputView.classList.contains('active')) {
-    switchToSearchView();
-  } else {
-    switchToInputView();
-  }
-});
-
 function switchToInputView() {
   inputView.classList.add('active');
   searchView.classList.remove('active');
@@ -44,84 +28,158 @@ function switchToSearchView() {
   localStorage.setItem('lastView', 'search');
 }
 
+// 初期状態復元
+const lastView = localStorage.getItem('lastView') || 'input';
+if (lastView === 'search') {
+  switchToSearchView();
+} else {
+  switchToInputView();
+}
+
+toggleViewBtn.addEventListener('click', () => {
+  if (inputView.classList.contains('active')) {
+    switchToSearchView();
+  } else {
+    switchToInputView();
+  }
+});
+
 // タスク機能
-taskForm.addEventListener('submit', (e) => {
+taskForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const taskText = taskInput.value.trim();
   const dueDateValue = dueDate.value;
   
-  if (taskText && dueDateValue) {
-    fetch('/tasks', {
+  if (!taskText || !dueDateValue) {
+    alert('タスクと日付を入力してください');
+    return;
+  }
+
+  try {
+    const response = await fetch('/tasks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
         text: taskText,
         dueDate: dueDateValue
       })
-    })
-    .then(() => {
-      taskInput.value = '';
-      dueDate.value = '';
-      loadTasks();
     });
+    
+    if (!response.ok) throw new Error('追加に失敗');
+    
+    taskInput.value = '';
+    dueDate.value = '';
+    loadTasks();
+  } catch (err) {
+    alert('エラー: ' + err.message);
   }
 });
 
-function loadTasks() {
-  fetch('/tasks')
-    .then(res => res.json())
-    .then(tasks => {
-      taskList.innerHTML = '';
-      tasks.forEach(task => {
-        const li = document.createElement('li');
-        li.className = 'task-item';
-        li.innerHTML = `
-          <span>${task.text}</span>
-          <div>
-            <span class="due-date">${formatDate(task.dueDate)}</span>
-            <button class="delete-btn" data-id="${task.id}">削除</button>
-          </div>
-        `;
-        taskList.appendChild(li);
-      });
-    });
+// タスク読み込み
+async function loadTasks() {
+  try {
+    const response = await fetch('/tasks');
+    if (!response.ok) throw new Error('データ取得失敗');
+    
+    const tasks = await response.json();
+    renderTaskList(taskList, tasks);
+  } catch (err) {
+    console.error('エラー:', err);
+    taskList.innerHTML = '<p class="error-message">データの読み込みに失敗しました</p>';
+  }
 }
 
-taskList.addEventListener('click', (e) => {
-  if (e.target.classList.contains('delete-btn')) {
-    const id = e.target.dataset.id;
-    fetch(`/tasks/${id}`, { method: 'DELETE' })
-      .then(() => loadTasks());
+// タスク表示
+function renderTaskList(container, tasks) {
+  container.innerHTML = '';
+  
+  if (tasks.length === 0) {
+    container.innerHTML = '<p class="no-tasks">タスクがありません</p>';
+    return;
   }
-});
+
+  tasks.forEach(task => {
+    const li = document.createElement('li');
+    li.className = `task-item ${task.done ? 'done' : ''} ${isOverdue(task.dueDate) ? 'overdue' : ''}`;
+    
+    li.innerHTML = `
+      <div class="task-content">
+        <button class="do-btn" data-id="${task.id}">
+          ${task.done ? '✓' : 'Do'}
+        </button>
+        <span class="task-text">${task.text}</span>
+        <span class="due-date">${formatDate(task.dueDate)}</span>
+      </div>
+      ${task.done ? '<span class="auto-delete">24時間後に削除</span>' : ''}
+      <button class="delete-btn" data-id="${task.id}">削除</button>
+    `;
+    container.appendChild(li);
+  });
+
+  // イベントリスナー設定
+  document.querySelectorAll('.do-btn').forEach(btn => {
+    btn.addEventListener('click', toggleTaskDone);
+  });
+
+  document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', deleteTask);
+  });
+}
+
+// タスク状態切り替え
+async function toggleTaskDone(e) {
+  const id = parseInt(e.target.dataset.id);
+  
+  try {
+    const response = await fetch(`/tasks/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ done: e.target.textContent.trim() !== '✓' })
+    });
+    
+    if (!response.ok) throw new Error('更新失敗');
+    loadTasks();
+  } catch (err) {
+    alert('エラー: ' + err.message);
+  }
+}
+
+// タスク削除
+async function deleteTask(e) {
+  if (!confirm('本当に削除しますか？')) return;
+  
+  const id = parseInt(e.target.dataset.id);
+  try {
+    const response = await fetch(`/tasks/${id}`, { 
+      method: 'DELETE' 
+    });
+    
+    if (!response.ok) throw new Error('削除失敗');
+    loadTasks();
+  } catch (err) {
+    alert('削除エラー: ' + err.message);
+  }
+}
 
 // 検索機能
 searchForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   const dateInput = searchDate.value;
   
-  if (!dateInput) return;
-  
-  const response = await fetch(`/tasks/search?date=${dateInput}`);
-  const tasks = await response.json();
-  
-  searchResults.innerHTML = '';
-  
-  if (tasks.length === 0) {
-    const message = document.createElement('li');
-    message.textContent = '該当するタスクはありません';
-    message.className = 'no-tasks-message';
-    searchResults.appendChild(message);
-  } else {
-    tasks.forEach(task => {
-      const li = document.createElement('li');
-      li.className = 'task-item';
-      li.innerHTML = `
-        <span>${task.text}</span>
-        <span class="due-date">${formatDate(task.dueDate)}</span>
-      `;
-      searchResults.appendChild(li);
-    });
+  if (!dateInput) {
+    alert('日付を選択してください');
+    return;
+  }
+
+  try {
+    const response = await fetch(`/tasks/search?date=${dateInput}`);
+    if (!response.ok) throw new Error('検索失敗');
+    
+    const tasks = await response.json();
+    renderTaskList(searchResults, tasks);
+  } catch (err) {
+    alert('検索エラー: ' + err.message);
+    searchResults.innerHTML = `<p class="error-message">${err.message}</p>`;
   }
 });
 
@@ -130,6 +188,10 @@ function formatDate(dateString) {
   if (!dateString) return '期限未設定';
   const date = new Date(dateString);
   return `期限: ${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}`;
+}
+
+function isOverdue(dateString) {
+  return new Date(dateString) < new Date();
 }
 
 // 初期化
