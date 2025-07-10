@@ -1,14 +1,18 @@
 const express = require('express');
+const path = require('path');
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
+// ミドルウェア
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
+// タスクデータ（簡易データベース）
 let tasks = [];
+let nextId = 1;
 
-// タスク分類用ヘルパー関数
+// タスク分類関数
 function categorizeTask(task) {
   const now = new Date();
   const dueDate = new Date(task.dueDate);
@@ -20,7 +24,7 @@ function categorizeTask(task) {
   return 'later';
 }
 
-// タスク一覧取得（分類済み）
+// タスク一覧取得
 app.get('/tasks', (req, res) => {
   const categorized = {
     overdue: [],
@@ -45,7 +49,7 @@ app.get('/tasks', (req, res) => {
 // タスク追加
 app.post('/tasks', (req, res) => {
   const newTask = {
-    id: Date.now(),
+    id: nextId++,
     text: req.body.text,
     dueDate: req.body.dueDate,
     done: false,
@@ -57,23 +61,25 @@ app.post('/tasks', (req, res) => {
 
 // タスク状態更新
 app.patch('/tasks/:id', (req, res) => {
-  const task = tasks.find(t => t.id === parseInt(req.params.id));
+  const taskId = parseInt(req.params.id);
+  const task = tasks.find(t => t.id === taskId);
+  
   if (task) {
     task.done = req.body.done;
     res.json(task);
   } else {
-    res.sendStatus(404);
+    res.status(404).send('タスクが見つかりません');
   }
 });
 
-// タスク削除（確認なし）
+// タスク削除
 app.delete('/tasks/:id', (req, res) => {
   const taskId = parseInt(req.params.id);
   tasks = tasks.filter(task => task.id !== taskId);
   res.sendStatus(204);
 });
 
-// 自動削除処理
+// 自動削除処理（24時間経過した完了タスク）
 setInterval(() => {
   const now = new Date();
   tasks = tasks.filter(task => {
@@ -83,6 +89,7 @@ setInterval(() => {
   });
 }, 60 * 60 * 1000); // 1時間ごとにチェック
 
+// サーバー起動
 app.listen(port, () => {
   console.log(`サーバー起動: http://localhost:${port}`);
 });

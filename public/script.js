@@ -39,18 +39,17 @@ function renderTaskList(category, tasks) {
     return;
   }
 
-  // 未完了タスクと完了タスクを分離
   const undoneTasks = tasks.filter(task => !task.done);
   const doneTasks = tasks.filter(task => task.done);
 
-  // 未完了タスクを表示（期限順）
+  // 未完了タスクを期限順に表示
   undoneTasks
     .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
     .forEach(task => {
       container.appendChild(createTaskElement(task, false));
     });
 
-  // 完了タスクを最下部に表示
+  // 完了タスクを表示
   doneTasks.forEach(task => {
     container.appendChild(createTaskElement(task, true));
   });
@@ -65,20 +64,18 @@ function renderTaskList(category, tasks) {
   });
 }
 
-// タスク要素作成関数
+// タスク要素作成
 function createTaskElement(task, isDone) {
   const li = document.createElement('li');
   li.className = `task-item ${isDone ? 'done' : ''}`;
   
   li.innerHTML = `
-    <div class="task-grid">
-      <span class="task-text">${task.text}</span>
-      <span class="due-date">${formatDate(task.dueDate)}</span>
-      <button class="do-btn" data-id="${task.id}">
-        ${isDone ? '✓' : 'Do'}
-      </button>
-      <button class="delete-btn" data-id="${task.id}">削除</button>
-    </div>
+    <button class="do-btn" data-id="${task.id}">
+      ${isDone ? '✓' : 'Do'}
+    </button>
+    <span class="task-text">${task.text}</span>
+    <span class="due-date">${formatDate(task.dueDate)}</span>
+    <button class="delete-btn" data-id="${task.id}">削除</button>
     ${isDone ? '<span class="auto-delete">24時間後に削除</span>' : ''}
   `;
   
@@ -104,7 +101,7 @@ async function toggleTaskDone(e) {
   }
 }
 
-// タスク削除（確認なし）
+// タスク削除
 async function deleteTask(e) {
   const id = parseInt(e.target.dataset.id);
   try {

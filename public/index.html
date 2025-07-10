@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-  <title>ToDoリスト（分類表示）</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ToDoリスト</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -16,50 +18,27 @@
     
     <div class="task-columns">
       <div class="task-column overdue-column">
-        <h2>
-          <span></span>
-          <span></span> 
-          <span>期限切れ</span>
-          <span></span>
-          <span></span>
-        </h2>
+        <h2>期限切れ</h2>
         <ul id="overdue-tasks"></ul>
       </div>
       
       <div class="task-column urgent-column">
-        <h2>
-          <span></span>
-          <span></span> 
-          <span>3日以内</span>
-          <span></span>
-          <span></span>
-        </h2>
+        <h2>3日以内</h2>
         <ul id="urgent-tasks"></ul>
       </div>
       
       <div class="task-column upcoming-column">
-        <h2>
-          <span></span>
-          <span></span> 
-          <span>4～10日以内</span>
-          <span></span>
-          <span></span>
-        </h2>
+        <h2>4～10日以内</h2>
         <ul id="upcoming-tasks"></ul>
       </div>
       
       <div class="task-column later-column">
-        <h2>
-          <span></span>
-          <span></span> 
-          <span>それ以上</span>
-          <span></span>
-          <span></span>
-        </h2>
+        <h2>それ以上</h2>
         <ul id="later-tasks"></ul>
       </div>
     </div>
   </div>
+  
   <script src="script.js"></script>
 </body>
 </html>
