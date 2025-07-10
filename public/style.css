@@ -132,6 +132,8 @@ body {
   grid-template-columns: 28px 1fr 50px;
   gap: 6px;
   align-items: center;
+  width: 100%;
+  margin-left: auto; /* 右端に固定 */
 }
 
 /* Doボタン */
@@ -200,9 +202,9 @@ body {
 
 /* 自動削除メッセージ */
 .auto-delete {
-  display: none;
+  display: 2;
   grid-column: 2;
-  font-size: 11px;
+  font-size: 12px;
   color: #bdc3c7;
   margin-top: 3px;
   font-style: italic;
@@ -213,7 +215,7 @@ body {
 }
 
 .task-item.done .auto-delete {
-  display: block;
+  display: none;
 }
 
 /* 空状態メッセージ */
