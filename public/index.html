@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>ToDoリスト（期限付き）</title>
+  <title>ToDoリスト</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
     <h1>ToDoリスト</h1>
+    
     <form id="task-form">
-      <input 
-        type="text" 
-        id="task-input" 
-        placeholder="やることを入力..." 
-        required
-      >
-      <input 
-        type="date" 
-        id="due-date" 
-        required
-      >
+      <input type="text" id="task-input" placeholder="タスクを入力..." required>
+      <input type="date" id="due-date" required>
       <button type="submit">追加</button>
     </form>
+
+    <div class="search-container">
+      <h2>日付で検索</h2>
+      <form id="search-form">
+        <input type="date" id="search-date" required>
+        <button type="submit">検索</button>
+      </form>
+      <ul id="search-results"></ul>
+    </div>
+
     <ul id="task-list"></ul>
   </div>
   <script src="script.js"></script>

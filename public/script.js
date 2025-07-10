@@ -2,8 +2,11 @@ const taskForm = document.getElementById('task-form');
 const taskInput = document.getElementById('task-input');
 const dueDate = document.getElementById('due-date');
 const taskList = document.getElementById('task-list');
+const searchForm = document.getElementById('search-form');
+const searchDate = document.getElementById('search-date');
+const searchResults = document.getElementById('search-results');
 
-// タスクを読み込む
+// タスク読み込み
 function loadTasks() {
   fetch('/tasks')
     .then(res => res.json())
@@ -12,17 +15,9 @@ function loadTasks() {
       tasks.forEach(task => {
         const li = document.createElement('li');
         li.className = 'task-item';
-        
-        // 期限が近い場合は警告スタイルを適用
-        if (isDueSoon(task.dueDate)) {
-          li.classList.add('urgent');
-        }
-
         li.innerHTML = `
           <span>${task.text}</span>
-          <span class="due-date ${isOverdue(task.dueDate) ? 'overdue' : ''}">
-            ${formatDueDate(task.dueDate)}
-          </span>
+          <span class="due-date">期限: ${task.dueDate}</span>
           <button class="delete-btn" data-id="${task.id}">削除</button>
         `;
         taskList.appendChild(li);
@@ -30,29 +25,7 @@ function loadTasks() {
     });
 }
 
-// 日付をフォーマット
-function formatDueDate(dateString) {
-  if (!dateString) return '期限なし';
-  const date = new Date(dateString);
-  return `期限: ${date.toLocaleDateString()}`;
-}
-
-// 期限が過ぎているかチェック
-function isOverdue(dateString) {
-  if (!dateString) return false;
-  return new Date(dateString) < new Date();
-}
-
-// 期限が3日以内かチェック
-function isDueSoon(dateString) {
-  if (!dateString) return false;
-  const dueDate = new Date(dateString);
-  const today = new Date();
-  const diffDays = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
-  return diffDays <= 3 && diffDays >= 0;
-}
-
-// タスクを追加
+// タスク追加
 taskForm.addEventListener('submit', (e) => {
   e.preventDefault();
   fetch('/tasks', {
@@ -70,7 +43,7 @@ taskForm.addEventListener('submit', (e) => {
   });
 });
 
-// タスクを削除
+// タスク削除
 taskList.addEventListener('click', (e) => {
   if (e.target.classList.contains('delete-btn')) {
     const id = e.target.dataset.id;
@@ -79,5 +52,34 @@ taskList.addEventListener('click', (e) => {
   }
 });
 
-// 初期読み込み
+// 日付検索
+searchForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const dateInput = searchDate.value;
+  
+  if (!dateInput) return;
+  
+  const response = await fetch(`/tasks/search?date=${dateInput}`);
+  const tasks = await response.json();
+  
+  searchResults.innerHTML = '';
+  
+  if (tasks.length === 0) {
+    const message = document.createElement('p');
+    message.textContent = '該当するタスクはありません';
+    message.className = 'no-tasks-message';
+    searchResults.appendChild(message);
+  } else {
+    tasks.forEach(task => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <span>${task.text}</span>
+        <span class="due-date">期限: ${task.dueDate}</span>
+      `;
+      searchResults.appendChild(li);
+    });
+  }
+});
+
+// 初期化
 loadTasks();
