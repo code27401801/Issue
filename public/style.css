@@ -17,53 +17,81 @@ body {
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-/* フォームスタイル */
-#task-form {
+/* ヘッダー */
+.header {
   display: flex;
-  gap: 15px;
-  margin-bottom: 30px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+#toggle-mode {
+  padding: 8px 16px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+#toggle-mode:hover {
+  background: #2980b9;
+}
+
+/* フォーム共通 */
+#task-form, #search-form {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
 }
 
-#task-form input {
+#task-form input, #search-form input {
   flex: 1;
-  min-width: 250px;
-  padding: 12px 15px;
+  min-width: 200px;
+  padding: 10px 12px;
   border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 16px;
+  border-radius: 4px;
+  font-size: 14px;
 }
 
-#task-form button {
-  padding: 12px 25px;
-  background: #27ae60;
-  color: white;
+#task-form button, #search-form button {
+  padding: 10px 16px;
   border: none;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
-  font-size: 16px;
   font-weight: 600;
   transition: all 0.3s;
 }
 
-#task-form button:hover {
-  background: #219653;
-  transform: translateY(-2px);
+#task-form button[type="submit"] {
+  background: #27ae60;
+  color: white;
+}
+
+#search-form button[type="submit"] {
+  background: #3498db;
+  color: white;
+}
+
+#cancel-search {
+  background: #95a5a6;
+  color: white;
 }
 
 /* タスクカラム */
 .task-columns {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 15px;
 }
 
 .task-column {
-  width: 250px;
   background: #f8f9fa;
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 12px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .task-column h2 {
@@ -87,11 +115,11 @@ body {
   padding: 10px;
   margin-bottom: 10px;
   background: white;
-  border-radius: 5px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
   transition: all 0.3s;
-  width: 100%;
-  box-sizing: border-box;
+  display: flex;         /* フレックスボックスレイアウト */
+  align-items: center;   /* 子要素を垂直方向に中央揃え */
 }
 
 .task-item:hover {
@@ -99,7 +127,6 @@ body {
   box-shadow: 0 2px 5px rgba(0,0,0,0.15);
 }
 
-/* タスク内容レイアウト */
 .task-content {
   display: grid;
   grid-template-columns: 28px 1fr 50px;
@@ -107,7 +134,7 @@ body {
   align-items: center;
 }
 
-/* Doボタン（丸型） */
+/* Doボタン */
 .do-btn {
   width: 26px;
   height: 26px;
@@ -121,7 +148,6 @@ body {
   align-items: center;
   justify-content: center;
   padding: 0;
-  font-size: 14px;
   transition: all 0.3s;
 }
 
@@ -141,7 +167,6 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding: 0 3px;
 }
 
 .task-item.done .task-text {
@@ -162,7 +187,7 @@ body {
   background: #e74c3c;
   color: white;
   border: none;
-  padding: 6px 8px;
+  padding: 6px;
   border-radius: 4px;
   cursor: pointer;
   font-size: 12px;
@@ -199,20 +224,16 @@ body {
   font-size: 13px;
 }
 
-/* レスポンシブ対応 */
-@media (max-width: 1200px) {
-  .task-column {
-    width: 230px;
-  }
+.task-column ul {
+  list-style-type: none;  /* 箇条書きの記号を非表示 */
+  padding-left: 0;       /* 左の余白を削除 */
+  margin: 0;             /* デフォルトのマージンをリセット */
 }
 
+/* レスポンシブ対応 */
 @media (max-width: 1000px) {
   .task-columns {
     grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .task-column {
-    width: auto;
   }
 }
 
@@ -221,21 +242,14 @@ body {
     grid-template-columns: 1fr;
   }
   
-  .task-item {
-    min-height: 65px;
-  }
-  
-  .task-content {
-    grid-template-columns: 26px 1fr 45px;
-  }
-  
-  #task-form {
+  #task-form, #search-form {
     flex-direction: column;
-    gap: 10px;
   }
   
   #task-form input, 
-  #task-form button {
+  #task-form button,
+  #search-form input,
+  #search-form button {
     width: 100%;
   }
 }

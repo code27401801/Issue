@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// タスクデータ（簡易データベース）
+// タスクデータ
 let tasks = [];
 let nextId = 1;
 
@@ -24,7 +24,7 @@ function categorizeTask(task) {
   return 'later';
 }
 
-// タスク一覧取得
+// タスク一覧取得（分類済み）
 app.get('/tasks', (req, res) => {
   const categorized = {
     overdue: [],
@@ -44,6 +44,26 @@ app.get('/tasks', (req, res) => {
   });
 
   res.json(categorized);
+});
+
+// タスク検索
+app.get('/tasks/search', (req, res) => {
+  const { text, date } = req.query;
+  let results = [...tasks];
+  
+  if (text) {
+    results = results.filter(task => 
+      task.text.toLowerCase().includes(text.toLowerCase())
+    );
+  }
+  
+  if (date) {
+    results = results.filter(task => 
+      task.dueDate === date
+    );
+  }
+  
+  res.json(results);
 });
 
 // タスク追加
@@ -85,9 +105,9 @@ setInterval(() => {
   tasks = tasks.filter(task => {
     if (!task.done) return true;
     const doneTime = new Date(task.createdAt);
-    return now - doneTime < 24 * 60 * 60 * 1000; // 24時間以内
+    return now - doneTime < 24 * 60 * 60 * 1000;
   });
-}, 60 * 60 * 1000); // 1時間ごとにチェック
+}, 60 * 60 * 1000);
 
 // サーバー起動
 app.listen(port, () => {

@@ -8,7 +8,17 @@
 </head>
 <body>
   <div class="container">
-    <h1>ToDoリスト</h1>
+    <div class="header">
+      <h1>ToDoリスト</h1>
+      <button id="toggle-mode">検索モード</button>
+    </div>
+    
+    <form id="search-form" style="display: none;">
+      <input type="text" id="search-input" placeholder="タスク名で検索...">
+      <input type="date" id="search-date">
+      <button type="submit">検索</button>
+      <button type="button" id="cancel-search">キャンセル</button>
+    </form>
     
     <form id="task-form">
       <input type="text" id="task-input" placeholder="タスクを入力..." required>
@@ -38,7 +48,6 @@
       </div>
     </div>
   </div>
-  
   <script src="script.js"></script>
 </body>
 </html>
