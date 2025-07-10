@@ -39,22 +39,20 @@ function renderTaskList(category, tasks) {
     return;
   }
 
-  tasks.forEach(task => {
-    const li = document.createElement('li');
-    li.className = `task-item ${task.done ? 'done' : ''}`;
-    
-    li.innerHTML = `
-      <div class="task-content">
-        <button class="do-btn" data-id="${task.id}">
-          ${task.done ? '✓' : 'Do'}
-        </button>
-        <span class="task-text">${task.text}</span>
-        <span class="due-date">${formatDate(task.dueDate)}</span>
-      </div>
-      ${task.done ? '<span class="auto-delete">24時間後に削除</span>' : ''}
-      <button class="delete-btn" data-id="${task.id}">削除</button>
-    `;
-    container.appendChild(li);
+  // 未完了タスクと完了タスクを分離
+  const undoneTasks = tasks.filter(task => !task.done);
+  const doneTasks = tasks.filter(task => task.done);
+
+  // 未完了タスクを表示（期限順）
+  undoneTasks
+    .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+    .forEach(task => {
+      container.appendChild(createTaskElement(task, false));
+    });
+
+  // 完了タスクを最下部に表示
+  doneTasks.forEach(task => {
+    container.appendChild(createTaskElement(task, true));
   });
 
   // イベントリスナー設定
@@ -65,6 +63,26 @@ function renderTaskList(category, tasks) {
   container.querySelectorAll('.delete-btn').forEach(btn => {
     btn.addEventListener('click', deleteTask);
   });
+}
+
+// タスク要素作成関数
+function createTaskElement(task, isDone) {
+  const li = document.createElement('li');
+  li.className = `task-item ${isDone ? 'done' : ''}`;
+  
+  li.innerHTML = `
+    <div class="task-grid">
+      <span class="task-text">${task.text}</span>
+      <span class="due-date">${formatDate(task.dueDate)}</span>
+      <button class="do-btn" data-id="${task.id}">
+        ${isDone ? '✓' : 'Do'}
+      </button>
+      <button class="delete-btn" data-id="${task.id}">削除</button>
+    </div>
+    ${isDone ? '<span class="auto-delete">24時間後に削除</span>' : ''}
+  `;
+  
+  return li;
 }
 
 // タスク状態切り替え
